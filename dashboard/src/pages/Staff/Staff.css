@@ -1,0 +1,136 @@
+.staff-page {
+    max-width: 1200px;
+}
+
+/* Service Tags in table */
+.service-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    max-width: 300px;
+}
+
+.service-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    background: rgba(37, 99, 235, 0.08);
+    color: var(--color-primary);
+    border: 1px solid rgba(37, 99, 235, 0.15);
+    white-space: nowrap;
+}
+
+/* Staff Modal — wider for service picker */
+.staff-modal {
+    max-width: 600px;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.staff-modal__hint {
+    font-size: 0.76rem;
+    color: var(--color-text-faint);
+    margin-bottom: 8px;
+}
+
+/* Service Picker */
+.service-picker {
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    max-height: 220px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.service-picker__cat {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-faint);
+    margin-bottom: 6px;
+}
+
+.service-picker__items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.service-picker__item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    transition: var(--transition);
+    user-select: none;
+}
+
+.service-picker__item:hover {
+    border-color: var(--color-primary);
+    color: var(--color-text);
+}
+
+.service-picker__item input[type="checkbox"] {
+    accent-color: var(--color-primary);
+    width: 13px;
+    height: 13px;
+}
+
+/* Working Hours Grid */
+.working-hours-grid {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.hour-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: #ffffff;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.hour-row:last-child {
+    border-bottom: none;
+}
+
+.hour-row__day {
+    font-size: 0.825rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    color: var(--color-text);
+    width: 100px;
+}
+
+.hour-row__inputs {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.hour-sep {
+    font-size: 0.75rem;
+    color: var(--color-text-faint);
+}
+
+.form-input--sm {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    width: 105px;
+}

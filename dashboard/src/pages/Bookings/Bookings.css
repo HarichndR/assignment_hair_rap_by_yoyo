@@ -1,0 +1,25 @@
+.bookings-page {
+    max-width: 1300px;
+}
+
+.bookings-filters {
+    margin-bottom: 20px;
+}
+
+.date-range-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.filter-label {
+    font-size: 0.75rem;
+    color: var(--color-text-faint);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.td-small {
+    font-size: 0.73rem;
+    margin-top: 2px;
+}
