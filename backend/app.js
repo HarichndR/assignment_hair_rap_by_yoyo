@@ -12,11 +12,17 @@ const swaggerSpec = require("./src/config/swagger");
 
 const app = express();
 
-app.use(helmet({ contentSecurityPolicy: false })); // Disable CSP for swagger UI
+app.use(helmet({
+    contentSecurityPolicy: false,
+    crossOriginResourcePolicy: { policy: "cross-origin" }
+})); // Allow cross-origin resources (images) and swagger UI
 app.use(cors({ origin: env.CORS_ORIGIN || "*", credentials: true }));
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+// Serve static files from the public folder
+app.use(express.static("public"));
 
 // Documentation
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));

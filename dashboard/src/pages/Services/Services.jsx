@@ -172,7 +172,12 @@ function Services() {
                         <div className="services-grid">
                             {services.map((s) => (
                                 <div className={`service-card ${!s.isActive ? "service-card--inactive" : ""}`} key={s._id}>
+                                    {!s.isActive && <span className="service-card__inactive-badge">Inactive</span>}
+
                                     <div className="service-card__image-container">
+                                        <span className="service-card__category-floating">{s.category}</span>
+                                        <span className="service-card__price-tag">₹{s.price}</span>
+
                                         {s.images?.[0]?.url ? (
                                             <img
                                                 src={s.images[0].url}
@@ -185,20 +190,29 @@ function Services() {
                                             </div>
                                         )}
                                     </div>
-                                    <div className="service-card__header">
-                                        <span className="service-card__category">{s.category}</span>
-                                        <span className="service-card__price">₹{s.price}</span>
+
+                                    <div className="card-body">
+                                        <h3 className="service-card__name">{s.name}</h3>
+                                        <p className="service-card__description">
+                                            {s.description || "Indulge in our premium salon service tailored just for you."}
+                                        </p>
+
+                                        <div className="service-card__stats">
+                                            <div className="service-card__stat-item">
+                                                <span className="service-card__stat-icon">⏱</span>
+                                                <span>{s.duration} mins</span>
+                                            </div>
+                                            <div className="service-card__stat-item">
+                                                <span className="service-card__stat-icon">✨</span>
+                                                <span>Premium</span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <h3 className="service-card__name">{s.name}</h3>
-                                    <p className="service-card__description">{s.description || "No description"}</p>
-                                    <div className="service-card__meta">
-                                        <span>⏱ {s.duration} min</span>
-                                        {!s.isActive && <span className="service-card__inactive-badge">Inactive</span>}
-                                    </div>
+
                                     <div className="service-card__actions">
-                                        <button className="btn btn--sm btn--secondary" onClick={() => openEdit(s)}>Edit</button>
+                                        <button className="btn btn--secondary" onClick={() => openEdit(s)}>Edit</button>
                                         {s.isActive && (
-                                            <button className="btn btn--sm btn--danger" onClick={() => handleDelete(s._id)}>Deactivate</button>
+                                            <button className="btn btn--primary" onClick={() => handleDelete(s._id)}>Deactivate</button>
                                         )}
                                     </div>
                                 </div>

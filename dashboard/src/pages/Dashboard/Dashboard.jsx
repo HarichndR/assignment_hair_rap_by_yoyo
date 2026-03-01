@@ -110,7 +110,7 @@ function Dashboard() {
     // Fetch AI Summary whenever the date range (summaryDays) changes
     useEffect(() => {
         setSummaryLoading(true);
-        aiChat(`Provide a big, comprehensive business analysis report for the last ${summaryDays} days. Include key trends, revenue breakdown insights, customer growth analysis, staff performance highlights, and 3 specific strategic recommendations for improvement. Use professional headings and bullet points.`)
+        aiChat(`Provide a big, comprehensive business analysis report for the last ${summaryDays} days. Include key trends, revenue breakdown insights, customer growth analysis, staff performance highlights, and 3 specific strategic recommendations for improvement. Use HTML tags (<h3>, <p>, <strong>, <ul>, <li>) for formatting; do NOT use markdown stars or hashes.`)
             .then((res) => setAiSummary(res.data.data.answer))
             .catch(() => setAiSummary("Failed to generate AI Insights."))
             .finally(() => setSummaryLoading(false));

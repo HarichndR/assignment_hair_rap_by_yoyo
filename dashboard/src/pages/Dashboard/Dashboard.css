@@ -159,16 +159,14 @@
 
 /* AI Business Analyst Section */
 .dashboard__ai-analyst {
-    background: linear-gradient(145deg, #ffffff, #fcfdff);
-    border: 1px solid rgba(79, 70, 229, 0.15);
-    border-top: 6px solid var(--color-primary);
-    border-radius: 20px;
-    padding: 32px;
-    margin-top: 12px;
-    margin-bottom: 40px;
-    box-shadow: 0 10px 30px -5px rgba(79, 70, 229, 0.1);
+    background: linear-gradient(145deg, #ffffff, #f8fafc);
+    border: 1px solid rgba(79, 70, 229, 0.2);
+    border-top: 4px solid var(--color-primary);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 20px -5px rgba(79, 70, 229, 0.08);
 }
-
 
 .ai-analyst-header {
     display: flex;
