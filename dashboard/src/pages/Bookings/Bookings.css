@@ -1,25 +1,72 @@
 .bookings-page {
     max-width: 1300px;
+    animation: fadeIn 0.5s ease;
 }
 
-.bookings-filters {
-    margin-bottom: 20px;
+.header-actions {
+    display: flex;
+    gap: 12px;
 }
 
-.date-range-group {
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
+    z-index: 1000;
 }
 
-.filter-label {
-    font-size: 0.75rem;
-    color: var(--color-text-faint);
-    font-weight: 500;
-    white-space: nowrap;
+.modal-content {
+    width: 100%;
+    max-width: 600px;
+    padding: 30px;
+    position: relative;
+    border: 1px solid var(--glass-border);
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: var(--color-text);
+}
+
+.add-booking-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 10px;
 }
 
 .td-small {
     font-size: 0.73rem;
     margin-top: 2px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }

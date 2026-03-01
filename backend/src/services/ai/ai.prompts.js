@@ -1,6 +1,4 @@
-/**
- * AI Prompts — Centralized system instructions and personalities.
- */
+
 
 const SYSTEM_PROMPT = `
 You are the AI assistant for "The Salon." 

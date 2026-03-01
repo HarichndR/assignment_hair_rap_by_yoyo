@@ -2,7 +2,7 @@
     max-width: 1200px;
 }
 
-/* Service Tags in table */
+
 .service-tags {
     display: flex;
     flex-wrap: wrap;
@@ -22,7 +22,7 @@
     white-space: nowrap;
 }
 
-/* Staff Modal — wider for service picker */
+
 .staff-modal {
     max-width: 600px;
     max-height: 85vh;
@@ -35,7 +35,7 @@
     margin-bottom: 8px;
 }
 
-/* Service Picker */
+
 .service-picker {
     background: var(--color-surface-2);
     border: 1px solid var(--color-border);
@@ -89,7 +89,7 @@
     height: 13px;
 }
 
-/* Working Hours Grid */
+
 .working-hours-grid {
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);

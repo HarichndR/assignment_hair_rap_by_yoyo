@@ -29,7 +29,7 @@ const logger = createLogger({
   exitOnError: false,
 });
 
-// Morgan stream for HTTP request logging
+
 logger.stream = {
   write: (message) => logger.http(message.trim()),
 };

@@ -1,9 +1,6 @@
-/**
- * Admin seed script — run once to create the initial admin user.
- * Usage: node src/seeds/admin.seed.js
- */
+
 require("dotenv").config({ path: require("path").join(__dirname, "../../.env") });
-require("../config/env"); // validate env vars
+require("../config/env");
 
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");

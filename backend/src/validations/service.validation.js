@@ -27,7 +27,7 @@ const createServiceSchema = z.object({
         .max(50, "Category cannot exceed 50 characters"),
 });
 
-// All fields optional on update — but apply same rules
+
 const updateServiceSchema = createServiceSchema.partial();
 
 module.exports = { createServiceSchema, updateServiceSchema };

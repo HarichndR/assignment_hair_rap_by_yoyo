@@ -1,50 +1,33 @@
-/**
- * AI Service — Entry point for smart salon management queries.
- * 
- * This file is now a slim orchestrator that imports modular logic
- * for intents, prompts, and data fetching.
- */
 const axios = require("axios");
 const ApiError = require("../utils/ApiError");
 const logger = require("../utils/logger");
 const env = require("../config/env");
 
-// Modular Imports
 const { detectIntent } = require("./ai/ai.intents");
 const { SYSTEM_PROMPT } = require("./ai/ai.prompts");
 const { CONTEXT_FETCHERS } = require("./ai/ai.fetchers");
 
-// ─── Gemini Configuration ─────────────────────────────────────────────────────
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent`;
 const GEMINI_TIMEOUT_MS = 15_000;
 const MAX_QUERY_LENGTH = 500;
 
-/**
- * Main Chat Function
- * 
- * @param {string} rawQuery - The user query from the dashboard
- * @returns {Promise<Object>} - AI response with detected intent and data context
- */
 const chat = async (rawQuery) => {
     if (!rawQuery?.trim()) throw new ApiError(400, "Query cannot be empty");
     if (!env.GEMINI_API_KEY) {
         throw new ApiError(503, "AI assistant is not configured. Add GEMINI_API_KEY to your .env file.");
     }
 
-    // Sanitise query
     const query = rawQuery.trim().slice(0, MAX_QUERY_LENGTH);
     const intent = detectIntent(query);
 
     logger.debug(`[Assistant] intent="${intent}" query="${query.slice(0, 60)}"`);
 
-    // Extract dynamic params (e.g., "last 7 days")
     let days = 3;
     if (intent === "dashboard_trend_summary") {
         const match = query.match(/last (\d+) days/i);
         if (match && match[1]) days = parseInt(match[1], 10);
     }
 
-    // Fetch relevant database context
     const fetcher = CONTEXT_FETCHERS[intent] ?? CONTEXT_FETCHERS.general_stats;
     const contextData = await fetcher(days);
 
@@ -82,10 +65,8 @@ const chat = async (rawQuery) => {
     let answer = result.data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
     if (!answer) throw new ApiError(502, "AI returned an empty response. Please try again.");
 
-    // Handle structured JSON intents
     if (intent === "dashboard_analytics_json" || intent === "book_appointment") {
         try {
-            // Strip markdown formatting if present
             if (answer.startsWith("```json")) answer = answer.replace(/```json/g, "").replace(/```/g, "").trim();
             if (answer.startsWith("```")) answer = answer.replace(/```/g, "").trim();
 

@@ -37,7 +37,7 @@ sequenceDiagram
 ## Key Step Explanations
 
 ### 1. Dynamic Availability Check
-Unlike static slot systems, BookEase calculates availability on the fly. The **SlotService** looks at the staff member's defined working hours for that specific day and subtracts any existing bookings to present a clean list of free time.
+Unlike static slot systems, HairRapByYoyo calculates availability on the fly. The **SlotService** looks at the staff member's defined working hours for that specific day and subtracts any existing bookings to present a clean list of free time.
 
 ### 2. Conflict Prevention
 The system uses a **Compound Unique Index** in MongoDB on `{ staffId, date, startTime }` to ensure that even if two users click "Book" at the exact same millisecond, the database handles the race condition and only allows one to succeed.

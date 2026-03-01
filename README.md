@@ -2,62 +2,49 @@
 
 Welcome to the next generation of salon management. This system is a high-performance, visually premium booking platform powered by a state-of-the-art **AI Intelligence Core**. Built for **Hair Rap by Yoyo**, it focuses on seamless operations, intuitive scheduling, and data-driven insights.
 
----
-
-## 🚀 1. Setup & Environment Guide
-
-### Prerequisites
-- **Node.js**: v18+ 
-- **MongoDB**: Local instance or Atlas URI
-- **Gemini API Key**: From [aistudio.google.com](https://aistudio.google.com)
-
-### Installation
-```bash
-# Clone the repository
-git clone <repo-url>
-cd BookEase
-
-# Backend Setup
-cd backend
-npm install
-cp .env.example .env  # Configure your URI and API keys
-npm run seed          # Create default admin: admin@bookease.com / admin123
-npm run dev
-
-# Dashboard Setup
-cd ../dashboard
-npm install
-npm run dev
-```
+ **API Documentation**: [http://localhost:5005/api-docs/#/](http://localhost:5005/api-docs/#/)
 
 ---
 
-## 📂 2. Folder Structure: The "Why" & "How"
+##  1. AI Intelligence Core: The Context-Injection Algorithm
 
-We follow a clean **Controller-Service-Model** pattern to ensure the system remains organized and lightning-fast.
+The crown jewel of the system. We use a high-integrity **Hybrid RAG (Retrieval-Augmented Generation)** architecture to turn the AI into a powerful management partner.
 
-```text
-backend/src/
-├── config/      # Global constants, DB connection, & ENV management
-├── controllers/ # HTTP Layer: Handles requests from the dashboard
-├── middlewares/ # Security (Auth), Global Error Handling, & Validations
-├── models/      # Database Layer: Where all your data lives
-├── routes/      # Endpoint mapping (Admin access points)
-├── services/    # Business Logic Layer: The system's heart and soul
-├── utils/       # Shared patterns (Standardized responses and helpers)
-└── validations/ # Strict data filters (ensures clean data)
-```
+###  Modular AI Architecture
+The AI logic is isolated for maximum security and speed:
+- **Intelligent Brain**: Coordinates between the user and the database with high precision.
+- **Smart Lookups**: Automatically resolves staff and service names with 100% accuracy.
+- **Intent Detection**: Precisely understands user intent (e.g., "Show revenue," "Book haircut").
+- **Professional Persona**: Enforces business-standard behavior and premium UI formatting.
 
-### Why this is superior:
-- **Modular Design**: Everything has its place. AI logic is separated from Booking logic, making updates safe and fast.
-- **Predictable Success**: We use a unified `ApiResponse` utility for **EVERY** interaction.
-- **Ironclad Reliability**: A global error handler prevents crashes and ensures the dashboard always stays online.
+###  Strategic Intelligence
+- **Zero Hallucination**: The AI only speaks in terms of real-time verified data.
+- **Auto-Formatting**: Dynamically matches the Dashboard's aesthetic.
+- **Quota Resilience**: Smart detection for API limits ensures continuous operation.
 
 ---
 
-## 📊 3. System Architecture & Database
+##  2. The Booking Logic: Simple & Secure
 
-The system is built on a relational-like structure inside MongoDB to ensure 100% data integrity and high-performance joins.
+The system utilizes advanced scheduling algorithms to ensure salon operations run without conflicts.
+
+###  Dynamic Availability Search
+When searching for a service on a specific date:
+1.  **Staff Filtering**: Identifies staff qualified for the service and scheduled for that day.
+2.  **Sliding Window**: Calculates availability by "sliding" the service duration through the stylist's shift in 15-minute increments.
+3.  **Conflict Detection**: Every time slot is checked against existing "Confirmed" or "Pending" bookings in real-time.
+
+### Atomic Booking Confirmation
+Even after picking a slot, the system employs a final "Collision Shield":
+1.  **Final Verification**: Re-checks stylist availability at the millisecond of booking.
+2.  **Concurrency Management**: Ensures no two customers can ever claim the same slot simultaneously.
+
+---
+
+##  3. System Architecture & Tech Stack
+
+### Database Schema
+Built on a relational-like structure inside MongoDB for 100% data integrity.
 
 ```mermaid
 erDiagram
@@ -70,7 +57,6 @@ erDiagram
     User {
         string name
         string email
-        string role
     }
     Staff {
         string name
@@ -82,7 +68,6 @@ erDiagram
         string name
         number duration
         number price
-        boolean isActive
     }
     Booking {
         date date
@@ -92,56 +77,90 @@ erDiagram
     }
 ```
 
----
+### Technical Blueprints
+For a deep dive into the system's structural and logical design, refer to our detailed diagrams:
+- [ER Diagram](file:///Users/devHarish/vscode/test/docs/ER_DIAGRAM.md) — Database relationships and constraints.
+- [Class Diagram](file:///Users/devHarish/vscode/test/docs/CLASS_DIAGRAM.md) — Service-layer architecture and inheritance.
+- [Flow Diagram](file:///Users/devHarish/vscode/test/docs/FLOW_DIAGRAM.md) — Step-by-step logic for bookings and AI.
 
-## ⚙️ 4. The Booking Engine: Precision Scheduling
+### Folder Structure
+We follow a clean **Controller-Service-Model** pattern for modularity and speed.
 
-The core engine utilizes a **Check-Before-Write** strategy to ensure perfect schedule integrity and zero double-bookings.
-
-### How it works:
-1.  **Instant Validation**: Every request is screened for correct format and data integrity.
-2.  **Entity Resolution**: The system verifies the Service and Staff availability in milliseconds.
-3.  **Cross-Check Authorization**: Ensures the selected Staff is actually trained for the chosen Service.
-4.  **Window Verification**: Automatically aligns with both Global Salon Hours and individual Staff Shifts.
-5.  **Collision Shield**: Performs an atomic check against the database to ensure the time slot is free.
-6.  **Atomic Creation**: Confirms the booking only when all conditions are 100% met.
-
----
-
-## 🗓 5. Dynamic Slotting & Customer Experience
-
-### Sliding Window Algorithm
-Unlike static systems, we generate availability on-the-fly. This means if a staff member becomes available or a booking is moved, the dashboard reflects it **instantly**.
-
-### Fair Cancellation Policy
-- **Ownership Verification**: Customers can only manage their own bookings.
-- **Enforced Windows**: Cancellation policies (e.g., 24-hour notice) are automatically calculated and enforced by the engine.
+```text
+backend/src/
+├── controllers/ # HTTP Layer: Handles Dashboard requests
+├── services/    # Business Logic: The core engine
+├── models/      # Database Layer
+├── routes/      # API Endpoints
+├── middlewares/ # Security & Global Error Handling
+└── utils/       # Shared Helpers & API Patterns
+```
 
 ---
 
-## 🤖 6. AI Intelligence Core: The Context-Injection Algorithm
+## 
 
-This is the crown jewel of the system. We use a high-integrity **Hybrid RAG (Retrieval-Augmented Generation)** architecture to turn the AI into a powerful management partner.
+The system is designed with **Future-Proofing** as a core priority. We follow strict architectural patterns to ensure the code remains clean, maintainable, and highly scalable.
 
-### 🏗️ Modular AI Architecture
-The AI logic is isolated for maximum security and speed at [backend/src/services/ai/](file:///Users/devHarish/vscode/test/backend/src/services/ai/):
-- **[ai.service.js](file:///Users/devHarish/vscode/test/backend/src/services/ai.service.js)**: The brain that coordinates between the user and the database.
-- **[ai.fetchers.js](file:///Users/devHarish/vscode/test/backend/src/services/ai/ai.fetchers.js)**: Features **"Smart Lookups"** that automatically resolve staff and service names with 100% accuracy.
-- **[ai.intents.js](file:///Users/devHarish/vscode/test/backend/src/services/ai/ai.intents.js)**: Precisely understands user intent (e.g., "Show revenue," "Book haircut").
-- **[ai.prompts.js](file:///Users/devHarish/vscode/test/backend/src/services/ai/ai.prompts.js)**: Enforces professional behavior and ensures the Dashboard receives clean HTML for a premium look.
+###  Decoupled Architecture
+- **Isolated Features**: Each feature (AI, Bookings, Analytics) is self-contained. Modifying the AI prompt logic will never break the core booking engine.
+- **Zero-Side-Effect Policy**: Changes are scoped to their specific modules, ensuring that upgrades are safe and predictable.
 
-### 🧠 Strategic Intelligence
-- **Zero Hallucination**: The AI only speaks in terms of real data. It never "guesses" a number.
-- **Auto-Formatting**: The system detects the context and switches formatting to match the Dashboard's aesthetic perfectly.
-- **Quota Resilience**: Smart detection for API limits ensures the admin always knows what's happening.
+### ⚡ Separation of Concerns (SoC)
+We strictly separate the **"What"** from the **"How"**:
+- **Handler Functions**: Dedicated handlers manage specific tasks (e.g., `aiChat`, `createBooking`), keeping the controller layer thin and readable.
+- **Utility Layer**: Common logic (date formatting, query parsing, standardized responses) is abstracted into a robust `utils` library.
+- **Service Layer**: All business logic lives in the services, away from the HTTP transport layer, making it easy to test and replace.
 
+###  Future-Ready Scaling
+- **Modular Data Access**: New database fields or entire collections can be added without rewriting existing service logic.
+- **Plug-and-Play Components**: Both the Dashboard and Backend are built with a "component-first" mindset, making it trivial to add new features or upgrade existing ones without service interruption.
 
+---
 
-## 🎨 Visual Identity
+##  5. Best Practices Infrastructure
+
+###  Interactive Swagger Documentation
+Live environment to test every endpoint with standardized requests.
+- **Implementation**: Powered by `swagger-jsdoc` and `swagger-ui-express`.
+- **URL**: [http://localhost:5005/api-docs](http://localhost:5005/api-docs)
+
+###  Professional Logging System
+The backend utilizes **Winston** for industrial-grade tracking.
+- **Development**: Colorized console output for instant debugging.
+- **Production**: Critical errors are persisted to `logs/error.log`.
+
+---
+
+##  6. Setup & Environment Guide
+
+### Prerequisites
+- **Node.js**: v18+ 
+- **MongoDB**: Local or Atlas instance
+- **Gemini API Key**: From [aistudio.google.com](https://aistudio.google.com)
+
+### Installation
+```bash
+# Backend Setup
+cd backend
+npm install
+cp .env.example .env  # Configure your keys
+npm run seed          # Default admin: admin@hairrapbyyoyo.com / admin123
+npm run dev
+
+# Dashboard Setup
+cd ../dashboard
+npm install
+npm run dev
+```
+
+---
+
+##  Visual Identity
 - **Palette**: High-Contrast **Black, White, and Blue**.
-- **Aesthetic**: Premium SaaS feel with **Solid Surfaces** for maximum clarity.
+- **Aesthetic**: Premium SaaS feel with **Solid Surfaces**.
 - **Typography**: Strictly **Inter** for maximum legibility.
 
 ---
 
-**Status**: Smart AI Integrated ✅ | Optimized for Hair Rap by Yoyo 🚀
+**Status**: Smart AI Integrated  | Optimized for Hair Rap by Yoyo 

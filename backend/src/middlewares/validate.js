@@ -1,9 +1,6 @@
 const ApiError = require("../utils/ApiError");
 
-/**
- * Returns an Express middleware that validates req[source] against a Zod schema.
- * Source can be 'body', 'query', or 'params'. Defaults to 'body'.
- */
+
 const validate = (schema, source = "body") => (req, res, next) => {
     const result = schema.safeParse(req[source]);
     if (!result.success) {

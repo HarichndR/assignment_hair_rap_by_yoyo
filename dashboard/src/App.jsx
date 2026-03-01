@@ -2,16 +2,15 @@ import React, { Suspense, lazy } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LoadingSpinner from "./components/LoadingSpinner.jsx";
 
-// Lazy-loaded pages
+
 const Dashboard = lazy(() => import("./pages/Dashboard/Dashboard.jsx"));
 const Services = lazy(() => import("./pages/Services/Services.jsx"));
 const Staff = lazy(() => import("./pages/Staff/Staff.jsx"));
 const Bookings = lazy(() => import("./pages/Bookings/Bookings.jsx"));
 const Schedule = lazy(() => import("./pages/Schedule/Schedule.jsx"));
 const Settings = lazy(() => import("./pages/Settings/Settings.jsx"));
-const ApiTester = lazy(() => import("./pages/ApiTester/ApiTester.jsx"));
 
-// Auth is disabled — all routes are open directly
+
 function App() {
     return (
         <BrowserRouter>
@@ -23,7 +22,6 @@ function App() {
                     <Route path="/bookings" element={<Bookings />} />
                     <Route path="/schedule" element={<Schedule />} />
                     <Route path="/settings" element={<Settings />} />
-                    <Route path="/api-tester" element={<ApiTester />} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
             </Suspense>

@@ -1,9 +1,4 @@
-/**
- * AI Fetchers — Reliable data retrieval from MongoDB for AI context.
- * 
- * Includes fixes for "No data found" by ensuring lookups don't drop
- * records with missing or mismatched IDs.
- */
+
 
 const Booking = require("../../models/booking.model");
 const Service = require("../../models/service.model");
@@ -12,13 +7,8 @@ const User = require("../../models/user.model");
 const { BOOKING_STATUS } = require("../../config/constants");
 const { startOfToday, daysAgo, daysFromNow, toDateString } = require("../../utils/dateHelpers");
 
-// ─── Aggregation Pipeline Helpers ──────────────────────────────────────────────
-/**
- * Generic lookup helper that handles both direct field and _id (from groups)
- * @param {string} localField - The field containing the ID
- * @param {string} from - The collection to look up from
- * @param {string} as - The output field name
- */
+
+
 const lookupHelper = (localField, from, as) => [
     { $addFields: { tempIdObj: { $toObjectId: `$${localField}` } } },
     { $lookup: { from, localField: "tempIdObj", foreignField: "_id", as } },
@@ -29,13 +19,13 @@ const serviceLookup = lookupHelper("serviceId", "services", "service");
 const staffLookup = lookupHelper("staffId", "staffs", "staff");
 const userLookup = lookupHelper("userId", "users", "user");
 
-// Special lookups for after-grouping stages where the ID is in _id
+
 const serviceLookupGroup = lookupHelper("_id", "services", "service");
 const staffLookupGroup = lookupHelper("_id", "staffs", "staff");
 
 const CONTEXT_FETCHERS = {
 
-    // ── Dashboard AI Trend Summary ───────────────────────────────────────────
+
     dashboard_trend_summary: async (days = 3) => {
         const startDate = daysAgo(days);
         const [bookings, revenueAgg, newCustomers, topServices, topStaff] = await Promise.all([
@@ -72,7 +62,7 @@ const CONTEXT_FETCHERS = {
         };
     },
 
-    // ── Dashboard AI JSON Analytics ─────────────────────────────────────────
+
     dashboard_analytics_json: async () => {
         const [topServices, topStaff] = await Promise.all([
             Booking.aggregate([
@@ -98,7 +88,7 @@ const CONTEXT_FETCHERS = {
         };
     },
 
-    // ── Revenue total ──────────────────────────────────────────────────────────
+
     revenue: async () => {
         const weekStart = daysAgo(7);
         const [thisWeek, allTime] = await Promise.all([
@@ -122,7 +112,7 @@ const CONTEXT_FETCHERS = {
         };
     },
 
-    // ── Revenue breakdown by category ───────────────────────────────────────────
+
     revenue_breakdown: () =>
         Booking.aggregate([
             { $match: { status: BOOKING_STATUS.CONFIRMED } },
@@ -138,7 +128,7 @@ const CONTEXT_FETCHERS = {
             { $project: { _id: 0, category: "$_id", revenue: 1, bookings: 1 } },
         ]),
 
-    // ── Cancellation rate ────────────────────────────────────────────────────────
+
     cancellation_rate: async () => {
         const [total, cancelled] = await Promise.all([
             Booking.countDocuments({}),
@@ -148,7 +138,7 @@ const CONTEXT_FETCHERS = {
         return { totalBookings: total, cancelledBookings: cancelled, cancellationRate: `${rate}%` };
     },
 
-    // ── Last 10 cancelled bookings ────────────────────────────────────────────
+
     list_cancelled: () =>
         Booking.find({ status: BOOKING_STATUS.CANCELLED })
             .sort({ updatedAt: -1 }).limit(10)
@@ -162,7 +152,7 @@ const CONTEXT_FETCHERS = {
                 cancelledBy: b.cancelledBy,
             }))),
 
-    // ── Upcoming 7 days ──────────────────────────────────────────────────────
+
     upcoming_bookings: async () => {
         const today = startOfToday();
         const next7 = daysFromNow(7);
@@ -183,7 +173,7 @@ const CONTEXT_FETCHERS = {
         }));
     },
 
-    // ── Top 5 staff by bookings ───────────────────────────────────────────
+
     top_staff: () =>
         Booking.aggregate([
             { $match: { status: { $ne: BOOKING_STATUS.CANCELLED } } },
@@ -193,7 +183,7 @@ const CONTEXT_FETCHERS = {
             { $project: { _id: 0, staffName: { $ifNull: ["$staff.name", "Unknown"] }, totalBookings: 1 } },
         ]),
 
-    // ── Staff performance ──────────────────────────────────────────────────
+
     staff_performance: () =>
         Booking.aggregate([
             { $match: { status: BOOKING_STATUS.CONFIRMED } },
@@ -210,7 +200,7 @@ const CONTEXT_FETCHERS = {
             { $project: { _id: 0, staffName: { $ifNull: ["$staff.name", "Unknown"] }, bookings: 1, revenue: 1 } },
         ]),
 
-    // ── Staff working today ─────────────────────────────────────────────────
+
     staff_today: async () => {
         const today = startOfToday();
         const tomorrow = daysFromNow(1);
@@ -222,7 +212,7 @@ const CONTEXT_FETCHERS = {
         ]);
     },
 
-    // ── Top 5 most-booked services ───────────────────────────────────────────
+
     top_services: () =>
         Booking.aggregate([
             { $match: { status: { $ne: BOOKING_STATUS.CANCELLED } } },
@@ -232,7 +222,7 @@ const CONTEXT_FETCHERS = {
             { $project: { _id: 0, serviceName: { $ifNull: ["$service.name", "Unknown"] }, totalBookings: 1 } },
         ]),
 
-    // ── Least-booked services ────────────────────────────────
+
     least_booked: async () => {
         const stats = await Booking.aggregate([
             { $group: { _id: "$serviceId", count: { $sum: 1 } } },
@@ -243,7 +233,7 @@ const CONTEXT_FETCHERS = {
         return stats;
     },
 
-    // ── Time-based stats ──────────────────────────────────────────────────────────
+
     stats_today: () => {
         const today = startOfToday();
         return Booking.aggregate([
@@ -267,7 +257,7 @@ const CONTEXT_FETCHERS = {
             { $project: { status: "$_id", count: 1, _id: 0 } },
         ]),
 
-    // ── Pending approvals ─────────────────────────────────────────────────────
+
     pending_approvals: () =>
         Booking.find({ status: BOOKING_STATUS.PENDING })
             .sort({ createdAt: 1 }).limit(20)
@@ -281,7 +271,7 @@ const CONTEXT_FETCHERS = {
                 time: b.startTime,
             }))),
 
-    // ── General overview ──────────────────────────────────────────
+
     general_stats: async () => {
         const [statusCounts, serviceCount, staffCount] = await Promise.all([
             Booking.aggregate([
@@ -294,7 +284,7 @@ const CONTEXT_FETCHERS = {
         return { bookingsByStatus: statusCounts, activeServices: serviceCount, activeStaff: staffCount };
     },
 
-    // ── Image Fetchers ──────────────────────────────────────────────
+
     staff_images: async () => {
         const staff = await Staff.find({ isAvailable: true }).select("name images").lean();
         return staff.map(s => ({ name: s.name, imageCount: (s.images || []).length }));
@@ -310,7 +300,7 @@ const CONTEXT_FETCHERS = {
         return users.map(u => ({ name: u.name, profileImage: u.image?.url || null }));
     },
 
-    // ── Booking Assistant Context ──────────────────────────────────────────
+
     book_appointment: async () => {
         const [services, staff, users] = await Promise.all([
             Service.find({ isActive: true }).select("name duration").lean(),

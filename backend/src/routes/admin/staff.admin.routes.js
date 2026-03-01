@@ -7,19 +7,33 @@ const { createSlotSchema } = require("../../validations/booking.validation");
 
 const router = express.Router();
 
+
+/**
+ * @swagger
+ * tags:
+ *   name: Admin/Staff
+ *   description: Administrative operations for salon staff
+ */
+
 /**
  * @swagger
  * /admin/staff:
  *   get:
- *     summary: 'Admin: List all staff members'
- *     tags: [Admin Staff]
- *     parameters:
- *       - in: query
- *         name: search
- *         schema: { type: string }
+ *     summary: Retrieve comprehensive Stylist directory
+ *     description: Fetches all stylists, including their availability status, specialized services, and images.
+ *     tags: [Admin/Staff]
+ *     security:
+ *       - BearerAuth: []
  *     responses:
  *       200:
- *         description: Staff list fetched
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean }
+ *                 data: { type: array, items: { $ref: '#/components/schemas/Staff' } }
  */
 router.get("/", staffController.getAllStaff);
 
@@ -27,24 +41,27 @@ router.get("/", staffController.getAllStaff);
  * @swagger
  * /admin/staff:
  *   post:
- *     summary: 'Admin: Onboard a new staff member'
- *     tags: [Admin Staff]
+ *     summary: Onboard a new Stylist
+ *     description: Adds a new staff member to the salon database. Required for booking assignments.
+ *     tags: [Admin/Staff]
+ *     security:
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required: [name, email, specialization]
+ *             required: [name, email, phone]
  *             properties:
- *               name: { type: string }
- *               email: { type: string }
- *               phone: { type: string }
- *               specialization: { type: string }
- *               services: { type: array, items: { type: string } }
+ *               name: { type: string, example: "Arjun Mehta" }
+ *               email: { type: string, format: email, example: "arjun@hairrap.com" }
+ *               phone: { type: string, example: "+919800012345" }
+ *               specialization: { type: string, example: "Master Stylist" }
+ *               services: { type: array, items: { type: string }, example: ["60d0fe4f5311236168a109cb"] }
  *     responses:
  *       201:
- *         description: Staff onboarded
+ *         description: Staff member onboarded successfully
  */
 router.post("/", validate(createStaffSchema), staffController.createStaffMember);
 
@@ -52,25 +69,25 @@ router.post("/", validate(createStaffSchema), staffController.createStaffMember)
  * @swagger
  * /admin/staff/{id}:
  *   put:
- *     summary: 'Admin: Update staff details'
- *     tags: [Admin Staff]
+ *     summary: Update Stylist credentials or status
+ *     description: Modify staff profile information, images, or availability.
+ *     tags: [Admin/Staff]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema: { type: string }
  *     requestBody:
+ *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               name: { type: string }
- *               specialization: { type: string }
- *               isAvailable: { type: boolean }
+ *             $ref: '#/components/schemas/Staff'
  *     responses:
  *       200:
- *         description: Staff updated
+ *         description: Stylist profile updated
  */
 router.put("/:id", validate(updateStaffSchema), staffController.updateStaffMember);
 
@@ -78,8 +95,11 @@ router.put("/:id", validate(updateStaffSchema), staffController.updateStaffMembe
  * @swagger
  * /admin/staff/{id}:
  *   delete:
- *     summary: 'Admin: Deactivate a staff member'
- *     tags: [Admin Staff]
+ *     summary: Archive/Deactivate Stylist
+ *     description: Marks a stylist as inactive. Existing bookings remain, but new ones will be blocked.
+ *     tags: [Admin/Staff]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -87,7 +107,7 @@ router.put("/:id", validate(updateStaffSchema), staffController.updateStaffMembe
  *         schema: { type: string }
  *     responses:
  *       200:
- *         description: Staff deactivated
+ *         description: Stylist successfully deactivated
  */
 router.delete("/:id", staffController.deactivateStaffMember);
 

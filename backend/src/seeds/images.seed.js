@@ -1,7 +1,4 @@
-/**
- * Perfect Comprehensive Seed + Images — Services, Staff, Slots, Bookings, User and Settings
- * Usage: node src/seeds/images.seed.js
- */
+
 require("dotenv").config();
 const mongoose = require("mongoose");
 const Service = require("../models/service.model");
@@ -54,10 +51,10 @@ async function seed() {
         console.log("🚀 Starting Image Seed...");
         await mongoose.connect(process.env.MONGODB_URI);
 
-        // Clear all
+
         await Promise.all([Service.deleteMany({}), Staff.deleteMany({}), Slot.deleteMany({}), Booking.deleteMany({}), User.deleteMany({}), AppSettings.deleteMany({})]);
 
-        // Seed User
+
         const user = await User.create({
             name: "Harish Dev",
             email: "harish@example.com",
@@ -66,12 +63,12 @@ async function seed() {
             image: { url: "https://res.cloudinary.com/demo/image/upload/v1611000000/customer_h.jpg", public_id: "customer_h" }
         });
 
-        // Seed Services
+
         const services = await Service.insertMany(SERVICES);
         const serviceMap = {};
         services.forEach(s => serviceMap[s.name] = s);
 
-        // Seed Staff
+
         const staffDocs = STAFF_TEMPLATE.map(s => ({
             ...s,
             services: s.serviceNames.map(name => serviceMap[name]._id)

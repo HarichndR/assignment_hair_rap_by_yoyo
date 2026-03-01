@@ -219,7 +219,7 @@ function Services() {
                             ))}
                         </div>
 
-                        {/* Pagination */}
+                        {}
                         {meta.totalPages > 1 && (
                             <div className="pagination" style={{ marginTop: 24 }}>
                                 <button className="btn btn--secondary btn--sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>← Prev</button>
@@ -268,5 +268,5 @@ function Services() {
             </div>
         </Layout>
     );
-} // Missing closing brace added here
+}
 export default Services;

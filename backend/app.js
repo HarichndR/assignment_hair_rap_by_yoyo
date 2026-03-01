@@ -15,22 +15,23 @@ const app = express();
 app.use(helmet({
     contentSecurityPolicy: false,
     crossOriginResourcePolicy: { policy: "cross-origin" }
-})); // Allow cross-origin resources (images) and swagger UI
+}));
 app.use(cors({ origin: env.CORS_ORIGIN || "*", credentials: true }));
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Serve static files from the public folder
 app.use(express.static("public"));
 
-// Documentation
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use("/api/v1", routes);
 
 app.use((req, res) => {
-    res.status(404).json({ success: false, statusCode: 404, message: "Route not found" });
+    if (req.path.startsWith("/api/")) {
+        return res.status(404).json({ success: false, statusCode: 404, message: "Route not found" });
+    }
+    res.status(404).send("Not Found");
 });
 
 app.use(errorHandler);

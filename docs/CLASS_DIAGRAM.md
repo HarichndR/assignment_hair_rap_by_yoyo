@@ -1,6 +1,6 @@
 # Class / Architectural Diagram
 
-BookEase follows a **Layered Architecture** pattern in the backend to ensure separation of concerns, testability, and maintainability.
+HairRapByYoyo follows a **Layered Architecture** pattern in the backend to ensure separation of concerns, testability, and maintainability.
 
 ## Architectural Layers
 

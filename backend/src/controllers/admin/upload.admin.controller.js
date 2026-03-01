@@ -17,7 +17,7 @@ const uploadGallery = (Model, modelName) => async (req, res, next) => {
             public_id: file.filename,
         }));
 
-        // Limit to 3 images for staff/services
+
         item.images = [...(item.images || []), ...newImages].slice(0, 3);
         await item.save();
 
@@ -33,7 +33,7 @@ const uploadSingleImage = (Model, modelName) => async (req, res, next) => {
         if (!item) throw new ApiError(404, `${modelName} not found`);
         if (!req.files || req.files.length === 0) throw new ApiError(400, "No file uploaded");
 
-        // Take the first file only
+
         const file = req.files[0];
         item.image = {
             url: file.path,

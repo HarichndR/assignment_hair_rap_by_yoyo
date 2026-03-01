@@ -2,7 +2,7 @@ const bookingService = require("../services/booking.service");
 const ApiResponse = require("../utils/ApiResponse");
 const ApiError = require("../utils/ApiError");
 
-// POST /bookings — userId comes from body
+
 const createBooking = async (req, res, next) => {
     try {
         const userId = req.body.userId;
@@ -11,7 +11,7 @@ const createBooking = async (req, res, next) => {
     } catch (err) { next(err); }
 };
 
-// GET /bookings?userId= — assignment spec
+
 const getMyBookings = async (req, res, next) => {
     try {
         const userId = req.query.userId;
@@ -20,7 +20,7 @@ const getMyBookings = async (req, res, next) => {
     } catch (err) { next(err); }
 };
 
-// PATCH /bookings/:id/cancel
+
 const cancelBooking = async (req, res, next) => {
     try {
         const userId = req.body.userId;

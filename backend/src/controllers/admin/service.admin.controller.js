@@ -1,7 +1,7 @@
 const serviceService = require("../../services/service.service");
 const ApiResponse = require("../../utils/ApiResponse");
 
-// Admin list — includes inactive, full filters
+
 const listServices = async (req, res, next) => {
     try {
         const result = await serviceService.adminListServices(req.query);

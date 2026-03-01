@@ -5,11 +5,20 @@ const { createUserSchema, updateUserSchema } = require("../validations/user.vali
 
 const router = express.Router();
 
+
+/**
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: User management and profile operations
+ */
+
 /**
  * @swagger
  * /users:
  *   post:
- *     summary: Create a new user profile
+ *     summary: Register a new user
+ *     description: Creates a new user profile linked to a Firebase UID. Validates phone and email uniqueness.
  *     tags: [Users]
  *     requestBody:
  *       required: true
@@ -17,15 +26,26 @@ const router = express.Router();
  *         application/json:
  *           schema:
  *             type: object
- *             required: [name, email, phone]
+ *             required: [name, email, phone, firebaseUid]
  *             properties:
- *               name: { type: string }
- *               email: { type: string }
- *               phone: { type: string }
- *               location: { type: string }
+ *               name: { type: string, example: "John Doe" }
+ *               email: { type: string, format: email, example: "john@example.com" }
+ *               phone: { type: string, example: "+919876543210" }
+ *               firebaseUid: { type: string, example: "UID12345" }
+ *               location: { type: string, example: "Mumbai" }
  *     responses:
  *       201:
- *         description: User created
+ *         description: User registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *       400:
+ *         description: Validation error or User already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiError'
  */
 router.post("/", validate(createUserSchema), userController.createUser);
 
@@ -33,7 +53,8 @@ router.post("/", validate(createUserSchema), userController.createUser);
  * @swagger
  * /users/{id}:
  *   get:
- *     summary: Get user profile by ID
+ *     summary: Get user profile
+ *     description: Retrieves the detailed profile of a user by their MongoDB ID.
  *     tags: [Users]
  *     parameters:
  *       - in: path
@@ -41,9 +62,19 @@ router.post("/", validate(createUserSchema), userController.createUser);
  *         required: true
  *         schema:
  *           type: string
+ *         example: 60d0fe4f5311236168a109ca
  *     responses:
  *       200:
- *         description: User profile fetched
+ *         description: User profile retrieved
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean }
+ *                 data: { $ref: '#/components/schemas/User' }
+ *       404:
+ *         description: User not found
  */
 router.get("/:id", userController.getUserProfile);
 
@@ -52,6 +83,7 @@ router.get("/:id", userController.getUserProfile);
  * /users/{id}:
  *   patch:
  *     summary: Update user profile
+ *     description: Partially update user details like name, phone, or location.
  *     tags: [Users]
  *     parameters:
  *       - in: path
@@ -70,7 +102,9 @@ router.get("/:id", userController.getUserProfile);
  *               location: { type: string }
  *     responses:
  *       200:
- *         description: User updated
+ *         description: Profile updated successfully
+ *       400:
+ *         description: Invalid data provided
  */
 router.patch("/:id", validate(updateUserSchema), userController.updateUserProfile);
 

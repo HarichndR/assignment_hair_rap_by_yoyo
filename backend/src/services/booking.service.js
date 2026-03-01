@@ -16,21 +16,11 @@ const {
     MS,
 } = require("../config/constants");
 
-// ─── Create Booking ───────────────────────────────────────────────────────────
-
-/**
- * Helper to convert time string to minutes for comparison.
- */
 const timeToMinutes = (time) => {
     const [h, m] = time.split(":").map(Number);
     return h * 60 + m;
 };
 
-/**
- * Professional Booking Logic:
- * Instead of consuming a pre-generated slot, we verify the staff's schedule
- * and existing bookings in real-time before confirming.
- */
 const createBooking = async (userId, { serviceId, staffId, date: dateStr, startTime, notes }) => {
     try {
         const [service, staff] = await Promise.all([
@@ -41,16 +31,13 @@ const createBooking = async (userId, { serviceId, staffId, date: dateStr, startT
         if (!service || !service.isActive) throw new ApiError(404, "Service not found");
         if (!staff || !staff.isAvailable) throw new ApiError(404, "Staff not available");
 
-        // 1. Verify staff performs this service
         const canPerform = staff.services.some((id) => id.toString() === serviceId.toString());
         if (!canPerform) throw new ApiError(400, "Selected staff cannot perform this service");
 
-        // 2. Compute endTime based on service duration
         const startMins = timeToMinutes(startTime);
         const endMins = startMins + service.duration;
         const endTime = `${String(Math.floor(endMins / 60)).padStart(2, "0")}:${String(endMins % 60).padStart(2, "0")}`;
 
-        // 3. Verify working hours (Global Salon Hours + Staff Schedule)
         const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
         const dayName = days[new Date(dateStr).getDay()];
 
@@ -71,7 +58,6 @@ const createBooking = async (userId, { serviceId, staffId, date: dateStr, startT
             throw new ApiError(400, "Booking time is outside operational hours (salon or staff schedule)");
         }
 
-        // 4. Collision Check (Real-time overlap detection)
         const overlapping = await Booking.findOne({
             staffId,
             date: dateStr,
@@ -85,7 +71,6 @@ const createBooking = async (userId, { serviceId, staffId, date: dateStr, startT
             throw new ApiError(409, "This time slot was just taken. Please choose another time.");
         }
 
-        // 5. Create the Booking Record
         const booking = await Booking.create({
             userId,
             serviceId,
@@ -108,7 +93,6 @@ const createBooking = async (userId, { serviceId, staffId, date: dateStr, startT
     }
 };
 
-// ─── Customer Cancel Booking ─────────────────────────────────────────────────
 const cancelBooking = async (bookingId, userId, reason) => {
     try {
         const booking = await Booking.findOne({ _id: bookingId, userId });
@@ -143,7 +127,6 @@ const cancelBooking = async (bookingId, userId, reason) => {
     }
 };
 
-// ─── Get User Bookings (GET /bookings?userId=) ────────────────────────────────
 const getUserBookings = async (userId, { page, limit, status, sortBy, sortOrder, fromDate, toDate } = {}) => {
     const { page: p, limit: l, skip } = parsePagination(page, limit);
     const sort = sanitiseSort(sortBy, sortOrder, SORT_FIELDS.BOOKING, "date");
@@ -168,7 +151,6 @@ const getUserBookings = async (userId, { page, limit, status, sortBy, sortOrder,
     return { bookings, meta: buildMeta(p, l, total) };
 };
 
-// ─── Admin: List Bookings ─────────────────────────────────────────────────────
 const adminListBookings = async ({ page, limit, status, staffId, serviceId, fromDate, toDate, sortBy, sortOrder } = {}) => {
     const { page: p, limit: l, skip } = parsePagination(page, limit);
     const sort = sanitiseSort(sortBy, sortOrder, SORT_FIELDS.BOOKING, "date");
@@ -199,7 +181,6 @@ const adminListBookings = async ({ page, limit, status, staffId, serviceId, from
     return { bookings, meta: buildMeta(p, l, total) };
 };
 
-// ─── Admin: Update Booking Status ────────────────────────────────────────────
 const adminUpdateBookingStatus = async (bookingId, { status, cancellationReason }) => {
     const booking = await Booking.findById(bookingId);
     if (!booking) throw new ApiError(404, "Booking not found");
@@ -218,10 +199,6 @@ const adminUpdateBookingStatus = async (bookingId, { status, cancellationReason 
     return booking;
 };
 
-/**
- * 🚀 High-performance Stat Summary using a single Aggregation pass
- * Replaces multiple countDocuments calls with a single group-by status query.
- */
 const getStatsSummary = async (filter = {}) => {
     const stats = await Booking.aggregate([
         { $match: filter },
@@ -233,7 +210,6 @@ const getStatsSummary = async (filter = {}) => {
         },
     ]);
 
-    // Map into a clean object with defaults
     const summary = {
         PENDING: 0,
         CONFIRMED: 0,

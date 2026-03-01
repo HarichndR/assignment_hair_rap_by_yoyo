@@ -17,15 +17,15 @@ const userRoutes = require("./user.routes");
 
 const router = express.Router();
 
-// Global rate limiter
+
 router.use(limiter.global);
 
-// Public routes
+
 router.use("/services", serviceRoutes);
 router.use("/bookings", bookingRoutes);
 router.use("/users", userRoutes);
 
-// Admin routes — auth removed
+
 router.use("/admin/services", adminServiceRoutes);
 router.use("/admin/staff", adminStaffRoutes);
 router.use("/admin/bookings", adminBookingRoutes);

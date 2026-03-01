@@ -44,8 +44,8 @@ function AiPopup() {
     };
 
     const confirmBookingAction = async (msgIndex, data) => {
-        // userId: MONGO_ID, serviceId: MONGO_ID, staffId: MONGO_ID, date: YYYY-MM-DD, startTime: HH:mm
-        // Handle 'NEW_CUSTOMER' or missing userId
+
+
         if (data.userId === 'NEW_CUSTOMER' || !data.userId) {
             alert("This seems to be a new customer. Please provide their details or pick an existing one.");
             return;

@@ -6,7 +6,7 @@ const bookingSchema = new mongoose.Schema(
         userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
         serviceId: { type: mongoose.Schema.Types.ObjectId, ref: "Service", required: true },
         staffId: { type: mongoose.Schema.Types.ObjectId, ref: "Staff", required: true },
-        // slotId is now optional, as we use dynamic time logic
+
         slotId: { type: mongoose.Schema.Types.ObjectId, ref: "AvailabilitySlot", required: false },
         date: { type: Date, required: true },
         startTime: { type: String, required: true },

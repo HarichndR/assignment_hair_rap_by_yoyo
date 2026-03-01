@@ -1,12 +1,10 @@
 const User = require("../models/user.model");
 const { parsePagination, sanitiseSort, buildMeta } = require("../utils/queryHelpers");
 
-// Extend SORT_FIELDS here since User wasn't in constants originally
+
 const USER_SORT_FIELDS = new Set(["name", "email", "createdAt"]);
 
-/**
- * List all users with pagination, sorting, and search.
- */
+
 const listUsers = async ({ page, limit, search, sortBy, sortOrder } = {}) => {
     const { page: p, limit: l, skip } = parsePagination(page, limit);
     const sort = sanitiseSort(sortBy, sortOrder, USER_SORT_FIELDS, "createdAt");

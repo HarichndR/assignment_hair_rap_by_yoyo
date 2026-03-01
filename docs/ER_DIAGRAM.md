@@ -1,6 +1,6 @@
 # Entity Relationship (ER) Diagram
 
-This document outlines the database schema and relationships for the BookEase system. The system uses MongoDB with Mongoose, following a relational-like structure for bookings and staff management.
+This document outlines the database schema and relationships for the HairRapByYoyo system. The system uses MongoDB with Mongoose, following a relational-like structure for bookings and staff management.
 
 ## Diagram
 

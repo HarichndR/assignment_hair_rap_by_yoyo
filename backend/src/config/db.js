@@ -26,7 +26,7 @@ const closeDB = async () => {
     logger.info("MongoDB connection closed");
 };
 
-// Graceful shutdown
+
 const gracefulShutdown = (signal) => {
     process.on(signal, async () => {
         logger.info(`${signal} received — closing MongoDB connection`);

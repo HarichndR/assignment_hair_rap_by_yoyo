@@ -1,19 +1,13 @@
 import React from 'react';
 import './Pagination.css';
 
-/**
- * Reusable Professional Pagination Component
- * @param {number} currentPage - Current active page (1-based)
- * @param {number} totalPages - Total number of pages
- * @param {function} onPageChange - Callback for page click
- * @param {number} totalResults - Optional: show total results count
- */
+
 const Pagination = ({ currentPage, totalPages, onPageChange, totalResults }) => {
     if (totalPages <= 1) return null;
 
     const renderPageNumbers = () => {
         const pages = [];
-        const delta = 2; // Number of pages to show around current page
+        const delta = 2;
 
         for (let i = 1; i <= totalPages; i++) {
             if (

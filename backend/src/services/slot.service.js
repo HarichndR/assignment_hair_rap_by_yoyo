@@ -4,95 +4,78 @@ const Service = require("../models/service.model");
 const ApiError = require("../utils/ApiError");
 const { BOOKING_STATUS } = require("../config/constants");
 
-// ─── Internal Time Helpers ────────────────────────────────────────────────────
-
-/**
- * Converts "HH:MM" string to minutes since midnight for easy math.
- */
 const timeToMinutes = (timeStr) => {
     const [h, m] = timeStr.split(":").map(Number);
     return (h * 60) + m;
 };
 
-/**
- * Converts minutes back to "HH:MM" format.
- */
 const minutesToTime = (mins) => {
     const h = Math.floor(mins / 60);
     const m = mins % 60;
     return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 };
 
-// ─── Core Service Logic ───────────────────────────────────────────────────────
-
-/**
- * List available slots for a specific service on a given date.
- * This is the "Dynamic Slotting" engine — it calculates slots on-the-fly.
- */
 const listSlotsForService = async (serviceId, dateStr) => {
     const date = new Date(dateStr);
     const dayName = date.toLocaleDateString("en-US", { weekday: "long" }).toLowerCase();
+    const startOfDay = new Date(dateStr);
+    const endOfDay = new Date(startOfDay);
+    endOfDay.setDate(startOfDay.getDate() + 1);
 
-    // 1. Fetch the service (to get its duration)
-    const service = await Service.findById(serviceId).lean();
-    if (!service || !service.isActive) throw new ApiError(404, "Service not found or inactive");
-
-    // 2. Find all eligible staff who provide this service
-    const staffMembers = await Staff.find({
-        services: serviceId,
-        isAvailable: true,
-        "workingHours.day": dayName,
-    }).lean();
-
-    if (staffMembers.length === 0) return [];
-
-    // 3. Fetch Salon-wide Business Hours (Simplified Global)
     const AppSettings = require("../models/settings.model");
-    const settings = await AppSettings.getSingleton();
+    const [service, settings, allEligibleStaff] = await Promise.all([
+        Service.findById(serviceId).select("duration isActive").lean(),
+        AppSettings.getSingleton(),
+        Staff.find({
+            services: serviceId,
+            isAvailable: true,
+            "workingHours.day": dayName,
+        }).select("_id name specialization workingHours").lean()
+    ]);
+
+    if (!service || !service.isActive) throw new ApiError(404, "Service not found or inactive");
+    if (allEligibleStaff.length === 0) return [];
+
     const globalStart = timeToMinutes(settings.salonStartTime || "09:00");
     const globalEnd = timeToMinutes(settings.salonEndTime || "21:00");
+    const duration = service.duration;
 
-    // 4. Get all existing non-cancelled bookings for these staff on this date
     const bookings = await Booking.find({
-        staffId: { $in: staffMembers.map(s => s._id) },
-        date: { $gte: new Date(dateStr), $lt: new Date(new Date(dateStr).setDate(date.getDate() + 1)) },
+        staffId: { $in: allEligibleStaff.map(s => s._id) },
+        date: { $gte: startOfDay, $lt: endOfDay },
         status: { $ne: BOOKING_STATUS.CANCELLED }
-    }).lean();
+    }).select("staffId startTime endTime").lean();
+
+    const bookingsByStaff = bookings.reduce((acc, b) => {
+        const sid = b.staffId.toString();
+        if (!acc[sid]) acc[sid] = [];
+        acc[sid].push({
+            start: timeToMinutes(b.startTime),
+            end: timeToMinutes(b.endTime)
+        });
+        return acc;
+    }, {});
 
     const availableSlots = [];
 
-    // 5. Calculate slots for each staff member
-    for (const staff of staffMembers) {
+    for (const staff of allEligibleStaff) {
         const hours = staff.workingHours.find(h => h.day === dayName);
         if (!hours) continue;
 
-        // Intersection logic: Slot must be within staff hours AND global salon hours
-        const staffStart = timeToMinutes(hours.startTime);
-        const staffEnd = timeToMinutes(hours.endTime);
+        const effectiveStart = Math.max(timeToMinutes(hours.startTime), globalStart);
+        const effectiveEnd = Math.min(timeToMinutes(hours.endTime), globalEnd);
 
-        const effectiveStart = Math.max(staffStart, globalStart);
-        const effectiveEnd = Math.min(staffEnd, globalEnd);
-        const duration = service.duration;
+        const staffBookings = (bookingsByStaff[staff._id.toString()] || [])
+            .sort((a, b) => a.start - b.start);
 
-        // Fetch bookings for this specific staff member
-        const staffBookings = bookings
-            .filter(b => String(b.staffId) === String(staff._id))
-            .map(b => ({
-                start: timeToMinutes(b.startTime),
-                end: timeToMinutes(b.endTime)
-            }));
-
-        // Slide through the workday in 15-min increments
         for (let current = effectiveStart; current + duration <= effectiveEnd; current += 15) {
-            const slotStart = current;
             const slotEnd = current + duration;
 
-            // Check collision with any existing booking
-            const isColliding = staffBookings.some(b =>
-                (slotStart < b.end && slotEnd > b.start)
+            const hasCollision = staffBookings.some(b =>
+                (current < b.end && slotEnd > b.start)
             );
 
-            if (!isColliding) {
+            if (!hasCollision) {
                 availableSlots.push({
                     staffId: {
                         _id: staff._id,
@@ -100,7 +83,7 @@ const listSlotsForService = async (serviceId, dateStr) => {
                         specialization: staff.specialization
                     },
                     date: dateStr,
-                    startTime: minutesToTime(slotStart),
+                    startTime: minutesToTime(current),
                     endTime: minutesToTime(slotEnd),
                     type: "available"
                 });
@@ -111,10 +94,6 @@ const listSlotsForService = async (serviceId, dateStr) => {
     return availableSlots.sort((a, b) => a.startTime.localeCompare(b.startTime));
 };
 
-/**
- * Get all slots for a staff member (Admin view).
- * Mixes dynamic working hours with actual bookings.
- */
 const getStaffSlots = async (staffId, dateStr) => {
     const staff = await Staff.findById(staffId).lean();
     if (!staff) throw new ApiError(404, "Staff not found");
@@ -125,7 +104,6 @@ const getStaffSlots = async (staffId, dateStr) => {
 
     if (!hours) return [];
 
-    // For simplicity in admin view, we list bookings and empty gaps
     const bookings = await Booking.find({
         staffId,
         date: { $gte: new Date(dateStr), $lt: new Date(new Date(dateStr).setDate(date.getDate() + 1)) },
@@ -133,7 +111,6 @@ const getStaffSlots = async (staffId, dateStr) => {
         .populate("serviceId", "name")
         .lean();
 
-    // Map bookings to "booked" slots
     const result = bookings.map(b => ({
         _id: b._id,
         startTime: b.startTime,
@@ -145,11 +122,6 @@ const getStaffSlots = async (staffId, dateStr) => {
     return result.sort((a, b) => a.startTime.localeCompare(b.startTime));
 };
 
-/**
- * Create Slot is no longer used for dynamic slotting (virtual slots).
- * We keep the signature for compatibility but it's effectively a No-Op
- * or can be repurposed for "blocking" time manually.
- */
 const createSlot = async () => {
     throw new ApiError(403, "Static slot creation is disabled in Dynamic Slotting mode.");
 };

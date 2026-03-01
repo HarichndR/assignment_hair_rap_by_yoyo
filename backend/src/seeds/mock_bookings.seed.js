@@ -10,7 +10,7 @@ const generateRandomBookings = async () => {
         await mongoose.connect(process.env.MONGODB_URI);
         console.log("Connected to MongoDB for mock seeding...");
 
-        // 1. Fetch available entities
+
         const staffs = await Staff.find();
         const services = await Service.find();
         let users = await User.find();
@@ -31,7 +31,7 @@ const generateRandomBookings = async () => {
             users = await User.find();
         }
 
-        // 2. Make all staff available all week
+
         console.log("Updating all staff to be fully available 9 AM - 6 PM...");
         const fullWeekSchedule = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"].map(day => ({
             day,
@@ -42,7 +42,7 @@ const generateRandomBookings = async () => {
         for (let staff of staffs) {
             staff.isAvailable = true;
             staff.workingHours = fullWeekSchedule;
-            // Ensure they have all services if they don't have enough
+
             if (!staff.services.length) {
                 staff.services = [services[0]._id, services[1] ? services[1]._id : null].filter(Boolean);
             }
@@ -50,13 +50,13 @@ const generateRandomBookings = async () => {
         }
         console.log("Staff updated successfully.");
 
-        // Clear future bookings
+
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         await Booking.deleteMany({ date: { $gte: today } });
         console.log("Cleared upcoming bookings to start fresh.");
 
-        // 3. Generate random bookings for next 8 days
+
         const statuses = ["pending", "confirmed", "confirmed"];
         const mockBookings = [];
 
@@ -76,7 +76,7 @@ const generateRandomBookings = async () => {
             targetDate.setHours(0, 0, 0, 0);
 
             for (const staff of staffs) {
-                // Determine 1-4 random bookings per staff per day
+
                 const bookingsCount = Math.floor(Math.random() * 4) + 1;
 
                 let currentTime = "09:00";
@@ -87,7 +87,7 @@ const generateRandomBookings = async () => {
 
                     const durationMins = service.duration || 60;
 
-                    // Add random gap between bookings for THIS staff member
+
                     const gapMins = (Math.floor(Math.random() * 3) + 1) * 15;
                     const startTime = addMinutes(currentTime, gapMins);
                     const endTime = addMinutes(startTime, durationMins);

@@ -90,7 +90,7 @@ function Schedule() {
     const getInitials = (name) => name ? name.split(' ').map(n => n[0]).join('').toUpperCase() : '?';
 
     const renderSlots = () => {
-        const hours = Array.from({ length: 11 }, (_, i) => i + 9); // 9 AM to 7 PM
+        const hours = Array.from({ length: 11 }, (_, i) => i + 9);
 
         return (
             <div className="slots-grid">
@@ -104,10 +104,10 @@ function Schedule() {
                         return hrs * 60 + (mins || 0);
                     };
 
-                    // Bookings that START in this specific hour (for the display list)
+
                     const dayBookings = selectedDateBookings.filter(b => b.startTime.startsWith(timeStr.split(':')[0]));
 
-                    // Identify which staff are busy during ANY PART of this 60-minute window
+
                     const busyStaffIds = new Set();
                     selectedDateBookings.forEach(b => {
                         const start = timeToMins(b.startTime);
@@ -132,7 +132,7 @@ function Schedule() {
                                 </div>
                             </div>
 
-                            {/* Detailed Bookings (if any) */}
+                            {}
                             {dayBookings.length > 0 && (
                                 <div className="time-slot__bookings-list">
                                     {dayBookings.map(booking => (
@@ -167,7 +167,7 @@ function Schedule() {
                                 </div>
                             )}
 
-                            {/* Staff Status List (Rich Real-World Detail) */}
+                            {}
                             <div className="staff-status-list">
                                 <h4 className="staff-status-list__title">Staff Roster</h4>
                                 {allStaff.length === 0 ? <p className="no-staff">No staff available</p> : (

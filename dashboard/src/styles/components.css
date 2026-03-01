@@ -1,9 +1,6 @@
-/* === Shared Component Styles ===
- * Imported globally in main.jsx
- * Covers: buttons, forms, modals, data tables, page headers, pagination
- */
 
-/* Page Header */
+
+
 .page-header {
     display: flex;
     align-items: flex-start;
@@ -35,7 +32,7 @@
     font-size: 0.9rem;
 }
 
-/* Search Input */
+
 .search-input {
     width: 100%;
     max-width: 360px;
@@ -53,7 +50,7 @@
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-/* Buttons */
+
 .btn {
     border: none;
     border-radius: var(--radius-sm);
@@ -98,7 +95,7 @@
     color: white;
 }
 
-/* Active Filter Indicator */
+
 .btn--has-filters {
     border-color: var(--color-primary) !important;
     color: var(--color-primary) !important;
@@ -128,7 +125,7 @@
     transform: none !important;
 }
 
-/* Form Elements */
+
 .form-group {
     display: flex;
     flex-direction: column;
@@ -164,7 +161,7 @@
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-/* Modal */
+
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -206,7 +203,7 @@
     margin-top: 8px;
 }
 
-/* Data Table */
+
 .table-wrap {
     overflow-x: auto;
     border-radius: var(--radius-md);
@@ -257,7 +254,7 @@
     gap: 8px;
 }
 
-/* Pagination */
+
 .pagination {
     display: flex;
     align-items: center;
@@ -271,7 +268,7 @@
     color: var(--color-text-muted);
 }
 
-/* Status Badge */
+
 .status-badge {
     display: inline-block;
     padding: 3px 10px;
@@ -284,7 +281,7 @@
     border: 1px solid color-mix(in srgb, var(--scolor) 30%, transparent);
 }
 
-/* Feedback States */
+
 .form-success {
     color: var(--color-success);
     font-size: 0.85rem;

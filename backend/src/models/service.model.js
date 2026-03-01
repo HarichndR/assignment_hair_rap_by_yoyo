@@ -4,7 +4,7 @@ const serviceSchema = new mongoose.Schema(
     {
         name: { type: String, required: true, trim: true },
         description: { type: String, trim: true },
-        duration: { type: Number, required: true, min: 15 }, // minutes
+        duration: { type: Number, required: true, min: 15 },
         price: { type: Number, required: true, min: 0 },
         category: { type: String, required: true, trim: true },
         isActive: { type: Boolean, default: true },

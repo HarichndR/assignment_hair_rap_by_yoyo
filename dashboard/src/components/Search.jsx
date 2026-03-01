@@ -69,7 +69,7 @@ function Search() {
 
             {showResults && results && (
                 <div className="search-dropdown">
-                    {/* Staff Results */}
+                    {}
                     {results.staff.length > 0 && (
                         <div className="search-result-grp">
                             <h4 className="search-result-grp__title">Staff</h4>
@@ -82,7 +82,7 @@ function Search() {
                         </div>
                     )}
 
-                    {/* Service Results */}
+                    {}
                     {results.services.length > 0 && (
                         <div className="search-result-grp">
                             <h4 className="search-result-grp__title">Services</h4>
@@ -95,7 +95,7 @@ function Search() {
                         </div>
                     )}
 
-                    {/* Booking Results */}
+                    {}
                     {results.bookings.length > 0 && (
                         <div className="search-result-grp">
                             <h4 className="search-result-grp__title">Bookings</h4>

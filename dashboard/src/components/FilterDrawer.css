@@ -78,10 +78,10 @@
     flex: 1;
 }
 
-/* Common form group spacing inside drawer */
+
 .filter-drawer .form-group {
     margin-bottom: 0px;
-    /* Overriding default if needed */
+    
 }
 
 .filter-drawer .form-label {

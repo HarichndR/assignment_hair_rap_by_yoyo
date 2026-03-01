@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import Layout from "../../components/Layout.jsx";
-import { getAdminBookings, updateBookingStatus, getStaff } from "../../services/api.js";
+import { getAdminBookings, updateBookingStatus, getStaff, getServices, getAdminUsers } from "../../services/api.js";
 import LoadingSpinner from "../../components/LoadingSpinner.jsx";
 import Notification from "../../components/Notification.jsx";
 import FilterDrawer from "../../components/FilterDrawer.jsx";
@@ -23,6 +23,8 @@ function Bookings() {
     const [bookings, setBookings] = useState([]);
     const [meta, setMeta] = useState({});
     const [staffList, setStaffList] = useState([]);
+    const [serviceList, setServiceList] = useState([]);
+    const [userList, setUserList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
     const [filters, setFilters] = useState({
@@ -30,19 +32,36 @@ function Bookings() {
         sortBy: "date", sortOrder: "desc",
     });
     const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [newBooking, setNewBooking] = useState({
+        userId: "", serviceId: "", staffId: "", date: new Date().toISOString().split('T')[0], startTime: "10:00"
+    });
     const [notification, setNotification] = useState({ message: "", type: "success" });
 
     const fetchBookings = useCallback((f = filters, p = page) => {
         setLoading(true);
         getAdminBookings({ ...f, page: p, limit: 15 })
-            .then((r) => { setBookings(r.data.data || []); setMeta(r.data.meta || {}); })
-            .catch(() => { })
+            .then((r) => {
+                setBookings(r?.data?.data || []);
+                setMeta(r?.data?.meta || {});
+            })
+            .catch((err) => console.warn("Bookings fetch failed", err))
             .finally(() => setLoading(false));
-    }, []);
+    }, [filters, page]);
 
     useEffect(() => { fetchBookings(filters, page); }, [filters, page]);
     useEffect(() => {
-        getStaff({ limit: 100 }).then((r) => setStaffList(r.data.data || [])).catch(() => { });
+        getStaff({ limit: 100 })
+            .then((r) => setStaffList(r?.data?.data || []))
+            .catch((err) => console.warn("Staff fetch failed", err));
+
+        getServices({ limit: 100 })
+            .then(r => setServiceList(r?.data?.data || []))
+            .catch(err => console.warn("Services fetch failed", err));
+
+        getAdminUsers({ limit: 100 })
+            .then(r => setUserList(r?.data?.data || []))
+            .catch(err => console.warn("Users fetch failed", err));
     }, []);
 
     const handleFilter = (key, val) => {
@@ -57,6 +76,23 @@ function Bookings() {
             fetchBookings(filters, page);
         } catch (err) {
             setNotification({ message: err.response?.data?.message || "Update failed", type: "error" });
+        }
+    };
+
+    const handleAddBooking = async (e) => {
+        e.preventDefault();
+        try {
+            import("../../services/api.js").then(async api => {
+                await api.createBooking(newBooking);
+                setNotification({ message: "Booking created successfully!", type: "success" });
+                setIsAddModalOpen(false);
+                setNewBooking({
+                    userId: "", serviceId: "", staffId: "", date: new Date().toISOString().split('T')[0], startTime: "10:00"
+                });
+                fetchBookings(filters, 1);
+            });
+        } catch (err) {
+            setNotification({ message: err.response?.data?.message || "Creation failed", type: "error" });
         }
     };
 
@@ -75,13 +111,92 @@ function Bookings() {
                         <h1 className="page-title">Bookings</h1>
                         <p className="page-subtitle">{meta.total ?? 0} results</p>
                     </div>
-                    <button
-                        className={`btn btn--secondary ${hasFilters ? "btn--has-filters" : ""}`}
-                        onClick={() => setIsFilterOpen(true)}
-                    >
-                        Filter
-                    </button>
+                    <div className="header-actions">
+                        <button className="btn btn--primary" onClick={() => setIsAddModalOpen(true)}>
+                            + Add Booking
+                        </button>
+                        <button
+                            className={`btn btn--secondary ${hasFilters ? "btn--has-filters" : ""}`}
+                            onClick={() => setIsFilterOpen(true)}
+                        >
+                            Filter
+                        </button>
+                    </div>
                 </header>
+
+                {isAddModalOpen && (
+                    <div className="modal-overlay">
+                        <div className="modal-content glass-card animate-in fade-in-up">
+                            <h2 className="modal-title">New Appointment</h2>
+                            <form onSubmit={handleAddBooking} className="add-booking-form">
+                                <div className="form-group">
+                                    <label className="form-label">Customer</label>
+                                    <select
+                                        className="form-input"
+                                        required
+                                        value={newBooking.userId}
+                                        onChange={(e) => setNewBooking({ ...newBooking, userId: e.target.value })}
+                                    >
+                                        <option value="">Select Customer</option>
+                                        {(userList || []).map(u => <option key={u._id} value={u._id}>{u.name} ({u.email})</option>)}
+                                    </select>
+                                </div>
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label className="form-label">Service</label>
+                                        <select
+                                            className="form-input"
+                                            required
+                                            value={newBooking.serviceId}
+                                            onChange={(e) => setNewBooking({ ...newBooking, serviceId: e.target.value })}
+                                        >
+                                            <option value="">Select Service</option>
+                                            {(serviceList || []).map(s => <option key={s._id} value={s._id}>{s.name} - ₹{s.price}</option>)}
+                                        </select>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Stylist</label>
+                                        <select
+                                            className="form-input"
+                                            required
+                                            value={newBooking.staffId}
+                                            onChange={(e) => setNewBooking({ ...newBooking, staffId: e.target.value })}
+                                        >
+                                            <option value="">Select Stylist</option>
+                                            {(staffList || []).map(s => <option key={s._id} value={s._id}>{s.name}</option>)}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label className="form-label">Date</label>
+                                        <input
+                                            type="date"
+                                            className="form-input"
+                                            required
+                                            value={newBooking.date}
+                                            onChange={(e) => setNewBooking({ ...newBooking, date: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Start Time</label>
+                                        <input
+                                            type="time"
+                                            className="form-input"
+                                            required
+                                            value={newBooking.startTime}
+                                            onChange={(e) => setNewBooking({ ...newBooking, startTime: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="modal-actions">
+                                    <button type="button" className="btn btn--secondary" onClick={() => setIsAddModalOpen(false)}>Cancel</button>
+                                    <button type="submit" className="btn btn--primary">Create Booking</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )}
 
                 <FilterDrawer
                     isOpen={isFilterOpen}

@@ -3,10 +3,7 @@ const ApiError = require("../utils/ApiError");
 const { parsePagination, sanitiseSort, buildMeta } = require("../utils/queryHelpers");
 const { SORT_FIELDS } = require("../config/constants");
 
-/**
- * List staff members.
- * Supports filtering by availability and search terms.
- */
+
 const listStaff = async ({ page, limit, search, isAvailable, sortBy, sortOrder } = {}) => {
     const { page: p, limit: l, skip } = parsePagination(page, limit);
     const sort = sanitiseSort(sortBy, sortOrder, SORT_FIELDS.STAFF, "name");
@@ -24,17 +21,13 @@ const listStaff = async ({ page, limit, search, isAvailable, sortBy, sortOrder }
     return { staff, meta: buildMeta(p, l, total) };
 };
 
-/**
- * Create a new staff member.
- */
+
 const createStaffMember = async (data) => {
     const doc = await Staff.create(data);
     return Staff.findById(doc._id).populate("services", "name category").lean();
 };
 
-/**
- * Update staff member details.
- */
+
 const updateStaffMember = async (id, data) => {
     const staff = await Staff.findByIdAndUpdate(id, data, { new: true, runValidators: true })
         .populate("services", "name category");
@@ -42,9 +35,7 @@ const updateStaffMember = async (id, data) => {
     return staff;
 };
 
-/**
- * Soft-delete a staff member (mark as unavailable).
- */
+
 const deactivateStaffMember = async (id) => {
     const staff = await Staff.findByIdAndUpdate(id, { isAvailable: false }, { new: true });
     if (!staff) throw new ApiError(404, "Staff member not found");

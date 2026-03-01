@@ -6,8 +6,8 @@ const userSchema = new mongoose.Schema(
         email: { type: String, required: true, unique: true, lowercase: true, trim: true },
         phone: { type: String, trim: true },
         location: { type: String, trim: true },
-        // Multi-image support (e.g. Profile, ID docs, Salon visit photos)
-        // Single profile image support
+
+
         image: {
             url: { type: String },
             public_id: { type: String },

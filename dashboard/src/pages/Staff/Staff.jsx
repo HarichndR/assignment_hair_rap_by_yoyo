@@ -103,7 +103,7 @@ function Staff() {
         fetchStaff();
     };
 
-    // Group services by category for the modal selector
+
     const servicesByCategory = services.reduce((acc, s) => {
         if (!acc[s.category]) acc[s.category] = [];
         acc[s.category].push(s);
@@ -123,7 +123,7 @@ function Staff() {
                     </button>
                 </header>
 
-                {/* Search bar */}
+                {}
                 <div className="filter-bar" style={{ marginBottom: 20 }}>
                     <input
                         className="form-input filter-bar__search"
