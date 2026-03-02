@@ -162,6 +162,43 @@ const options = {
                         stack: { type: "string" },
                     },
                 },
+                CreateBookingInput: {
+                    type: "object",
+                    required: ["userId", "serviceId", "staffId", "date", "startTime"],
+                    properties: {
+                        userId: { type: "string", example: "60d0fe4f5311236168a109ca" },
+                        serviceId: { type: "string", example: "60d0fe4f5311236168a109cb" },
+                        staffId: { type: "string", example: "60d0fe4f5311236168a109cc" },
+                        date: { type: "string", format: "date", example: "2026-03-05" },
+                        startTime: { type: "string", example: "14:30" },
+                        notes: { type: "string", example: "Please handle with care." }
+                    }
+                },
+                CancelBookingInput: {
+                    type: "object",
+                    required: ["userId"],
+                    properties: {
+                        userId: { type: "string", example: "60d0fe4f5311236168a109ca" },
+                        cancellationReason: { type: "string", example: "Personal emergency" }
+                    }
+                },
+                UpdateSettingsInput: {
+                    type: "object",
+                    properties: {
+                        cancellationWindowHours: { type: "number", example: 24 },
+                        bookingConfirmationRequired: { type: "boolean", example: true },
+                        salonStartTime: { type: "string", example: "10:00" },
+                        salonEndTime: { type: "string", example: "19:00" }
+                    }
+                },
+                UpdateBookingStatusInput: {
+                    type: "object",
+                    required: ["status"],
+                    properties: {
+                        status: { type: "string", enum: ["pending", "confirmed", "completed", "cancelled"] },
+                        cancellationReason: { type: "string", example: "Staff unavailable" }
+                    }
+                }
             },
         },
     },

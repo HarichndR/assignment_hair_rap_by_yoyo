@@ -50,6 +50,13 @@ router.get("/", serviceController.listServices);
  *         application/json:
  *           schema:
  *             $ref: '#/components/schemas/Service'
+ *             required: [name, duration, price, category]
+ *             properties:
+ *               name: { type: string, example: "Men's Haircut" }
+ *               description: { type: string, example: "Classic cut with styling and wash." }
+ *               duration: { type: integer, example: 45 }
+ *               price: { type: number, example: 450 }
+ *               category: { type: string, example: "Haircut" }
  *     responses:
  *       201:
  *         description: Service added successfully
@@ -76,6 +83,13 @@ router.post("/", validate(createServiceSchema), serviceController.createService)
  *         application/json:
  *           schema:
  *             $ref: '#/components/schemas/Service'
+ *             properties:
+ *               name: { type: string }
+ *               description: { type: string }
+ *               duration: { type: integer }
+ *               price: { type: number }
+ *               category: { type: string }
+ *               isActive: { type: boolean }
  *     responses:
  *       200:
  *         description: Service updated successfully

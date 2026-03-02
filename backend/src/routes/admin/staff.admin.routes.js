@@ -85,6 +85,14 @@ router.post("/", validate(createStaffSchema), staffController.createStaffMember)
  *         application/json:
  *           schema:
  *             $ref: '#/components/schemas/Staff'
+ *             properties:
+ *               name: { type: string }
+ *               email: { type: string, format: email }
+ *               phone: { type: string }
+ *               specialization: { type: string }
+ *               services: { type: array, items: { type: string } }
+ *               isAvailable: { type: boolean }
+ *               workingHours: { type: array, items: { type: object } }
  *     responses:
  *       200:
  *         description: Stylist profile updated

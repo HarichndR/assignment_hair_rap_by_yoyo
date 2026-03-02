@@ -28,14 +28,7 @@ const router = express.Router();
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required: [serviceId, staffId, date, startTime]
- *             properties:
- *               serviceId: { type: string, example: "60d0fe4f5311236168a109cb" }
- *               staffId: { type: string, example: "60d0fe4f5311236168a109cc" }
- *               date: { type: string, format: date, example: "2026-03-05" }
- *               startTime: { type: string, example: "14:30" }
- *               notes: { type: string, example: "Please handle with care." }
+ *             $ref: '#/components/schemas/CreateBookingInput'
  *     responses:
  *       201:
  *         description: Booking request submitted successfully
@@ -59,6 +52,12 @@ router.post("/", limiter.booking, validate(createBookingSchema), bookingControll
  *     tags: [Bookings]
  *     security:
  *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: userId
+ *         required: true
+ *         schema: { type: string }
+ *         description: The ID of the authenticated user
  *     responses:
  *       200:
  *         description: Success
@@ -87,12 +86,11 @@ router.get("/", bookingController.getMyBookings);
  *         required: true
  *         schema: { type: string }
  *     requestBody:
+ *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               reason: { type: string, example: "Personal emergency" }
+ *             $ref: '#/components/schemas/CancelBookingInput'
  *     responses:
  *       200:
  *         description: Booking successfully cancelled
