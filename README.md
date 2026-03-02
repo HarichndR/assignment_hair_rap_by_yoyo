@@ -24,20 +24,32 @@ The AI logic is isolated for maximum security and speed:
 
 ---
 
-##  2. The Booking Logic: Simple & Secure
+##  2. Standard Professional API Logic
 
-The system utilizes advanced scheduling algorithms to ensure salon operations run without conflicts.
+Our system uses industrial-grade logic to handle bookings perfectly. Here is how our 3 main APIs work in simple steps:
 
-###  Dynamic Availability Search
-When searching for a service on a specific date:
-1.  **Staff Filtering**: Identifies staff qualified for the service and scheduled for that day.
-2.  **Sliding Window**: Calculates availability by "sliding" the service duration through the stylist's shift in 15-minute increments.
-3.  **Conflict Detection**: Every time slot is checked against existing "Confirmed" or "Pending" bookings in real-time.
+### A. Availability API (Find Free Time)
+*Goal: To show customers exactly when a stylist is free for a specific service.*
 
-### Atomic Booking Confirmation
-Even after picking a slot, the system employs a final "Collision Shield":
-1.  **Final Verification**: Re-checks stylist availability at the millisecond of booking.
-2.  **Concurrency Management**: Ensures no two customers can ever claim the same slot simultaneously.
+1.  **Staff & Shift Check**: First, the system checks if the stylist actually works on that day and what their shift hours are (e.g., 10:00 AM to 7:00 PM).
+2.  **The "Sliding Window" Search**: The system takes the service length (e.g., a 45-minute haircut) and "slides" it through the stylist's shift in 15-minute jumps.
+3.  **Conflict Detection**: At every jump, it looks at the database to see if there is already a "Confirmed" booking that overlaps.
+4.  **Result**: It only shows the times where the "Window" is completely empty and fits perfectly within the stylist's working hours.
+
+### B. Post Booking API (Create an Appointment)
+*Goal: To save a new booking safely without any double-bookings.*
+
+1.  **Operational Guard**: It re-verifies that the service and stylist are still active in the salon.
+2.  **The "Collision Shield"**: Even if the customer saw the slot as free 1 minute ago, the system does a final check at the **exact millisecond** of the request to ensure no one else squeezed in.
+3.  **Data Integrity (Atomic Check)**: We use a special database rule (Unique Index) that acts like a "Physical Lock." If two people try to book the same spot at the same time, the database allows only the first one and rejects the second.
+4.  **Database Transactions**: This is like a "Single Contract." Either every part of the booking is saved (the slot is blocked and the booking is created), or **nothing** is saved. This prevents "half-saved" data if the server crashes.
+
+### C. Cancel Booking API (Cancel an Appointment)
+*Goal: To let users cancel while protecting the salon's schedule.*
+
+1.  **Ownership Verification**: The system ensures only the person who made the booking (or an admin) can cancel it.
+2.  **The "Fair-Play" Window**: It checks the salon's rules. For example, you might need to cancel at least 2 hours before the appointment. If it's too late, the cancellation is rejected.
+3.  **Status Update**: Once approved, the system updates the booking status to "Cancelled" and immediately releases the time slot so another customer can book it.
 
 ---
 
